@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "executor.h"
+#include "instruction.h"
 
 void get_real_address(void* value, size_t size){
     __uint8_t* bytes = (__uint8_t *) value;
@@ -15,23 +16,18 @@ void get_real_address(void* value, size_t size){
 
 int main(int argc, char** argv)
 {
-    uint8_t AC = 0;
-    uint8_t PC = 0x04;
-
-    FILE *file = fopen("aula01.mem", "rb");
+    FILE *file = fopen(argv[1], "rb");
 
     if(file == NULL){
         printf("Não foi possivel ler o arquivo!");
         return 0;
     }
 
-    uint8_t *memory = (uint8_t *)malloc(sizeof(uint8_t)* TOTAL_SIZE);
-    fread(memory, 1, TOTAL_SIZE, file);
+    CPU* executor = createMemory();
+    fread(executor->memory, 1, TOTAL_SIZE, file);
     fclose(file);
 
-    uint8_t posicao = 0;
-
-    uint32_t file_validation = *((__uint32_t*)(memory));
+    uint32_t file_validation = *((__uint32_t*)(executor->memory));
     get_real_address(&file_validation, sizeof(uint32_t));
 
     if(file_validation != SIGNATURE_FILE){
@@ -42,83 +38,48 @@ int main(int argc, char** argv)
     printf("SIGNATURE: 0x%x\n\n", file_validation);
 
     do {
-        printf("\nAC: %x PC: %x FZ: %i FN: %i INSTRUCAO: %x CONTEUDO: %x\n", AC, PC, flagZero(AC), flagNeg(AC), memory[PC], memory[PC+2]);
+        printf("\nAC: %x PC: %x FZ: %i FN: %i INSTRUCAO: %x CONTEUDO: %x\n", executor->AC, executor->PC,
+             flagZero(executor->AC), flagNeg(executor->AC), executor->memory[executor->PC], executor->memory[executor->PC+2]);
 
-        switch (memory[PC]) {
+        switch (executor->memory[executor->PC]) {
             case STA:
-                PC += 2;
-                posicao = memory[PC] ;
-                printf("STA ----- POSICAO: %x ---- MEMORIA: %x\n\n", posicao, memory[posicao * 2 + 4]);
-                memory[posicao * 2 + 4] = AC;
-                PC += 2;
+                instructionSTA(executor);               
                 break;
             case LDA:
-                PC += 2;
-                posicao = memory[PC] ;
-                printf("LDA ----- POSICAO: %x ---- MEMORIA: %x\n\n", posicao, memory[posicao * 2 + 4]);
-                AC = memory[posicao * 2 + 4];
-                PC += 2;
+                instructionLDA(executor);
                 break;
             case ADD:
-                PC += 2;
-                posicao = memory[PC] ;
-                printf("ADD ----- POSICAO: %x ---- MEMORIA: %x\n\n", posicao * 2 + 4, memory[posicao * 2 + 4]);
-                AC += memory[posicao * 2 + 4];
-                PC += 2;
+                instructionADD(executor);
                 break;
             case OR:
-                PC += 2;
-                posicao = memory[PC];
-                printf("OR ----- POSICAO: %x ---- MEMORIA: %x\n\n", posicao, memory[posicao * 2 + 4]);
-                AC = AC | memory[posicao * 2 + 4];
-                PC += 2;
+                instructionOR(executor);
                 break;
             case AND:
-                PC += 2;
-                posicao = memory[PC];
-                printf("AND ----- POSICAO: %x ---- MEMORIA: %x\n\n", posicao, memory[posicao * 2 + 4]);
-                AC = AC & memory[posicao * 2 + 4];
-                PC += 2;
+                instructionAND(executor);
                 break;
             case NOT:
-                AC = ~AC;
-                PC += 2;
+                instructionNOT(executor);
                 break;
             case JMP:
-                PC += 2;
-                posicao = memory[PC];
-                printf("JMP ----- POSICAO: %x ---- MEMORIA: %x ------ MEMORY[PC] %x\n\n", posicao, memory[posicao * 2 + 4], memory[PC]);
-                PC = posicao * 2 + 4;
+                instructionJMP(executor);
                 break;
             case JN:
-                PC += 2;
-                if (flagNeg(AC)) {
-                    posicao = memory[PC];
-                    PC = posicao * 2 + 4;
-                } else {
-                    PC += 2;
-                }
+                instructionJN(executor);
                 break;
             case JZ:
-                PC += 2;
-                if (flagZero(AC)) {
-                    posicao = memory[PC];
-                    PC = posicao * 2 + 4;
-                } else {
-                    PC += 2;
-                }
+                instructionJZ(executor);
                 break;
             default:
-                PC += 2;
+                executor->PC += 2;
                 break;
         }
 
-        printMemory(memory);
+        printMemory(executor->memory);
         printf("\n");
 
-    } while (memory[PC] != HLT && PC <= 0xFF);
+    } while (executor->memory[executor->PC] != HLT && executor->PC <= 0xFF);
 
-    free(memory);
+    freeMemory(executor);
 
     return 0;
 }

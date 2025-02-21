@@ -4,14 +4,6 @@
 #include <stdint.h>
 #include "executor.h"
 
-bool flagZero(uint8_t AC) {
-    return AC == 0x00;
-}
-
-bool flagNeg(uint8_t AC) {
-    return AC >= 0x80;
-}
-
 void printMemory(uint8_t* content){
     for(int i = 0; i < TOTAL_SIZE; i++){
         if (i % 16 == 0){
