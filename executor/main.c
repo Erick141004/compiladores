@@ -5,7 +5,7 @@
 #include "executor.h"
 #include "instruction.h"
 
-void get_real_address(void* value, size_t size){
+void getRealAddress(void* value, size_t size){
     __uint8_t* bytes = (__uint8_t *) value;
     for(int i = 0; i < size / 2; i++){
         __uint8_t aux = bytes[i];
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     fclose(file);
 
     uint32_t file_validation = *((__uint32_t*)(executor->memory));
-    get_real_address(&file_validation, sizeof(uint32_t));
+    getRealAddress(&file_validation, sizeof(uint32_t));
 
     if(file_validation != SIGNATURE_FILE){
         printf("Arquivo não compativel, tente novamente com outro arquivo\nExtensão aceita: .mem!");
