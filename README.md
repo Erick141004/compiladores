@@ -18,6 +18,7 @@ executor/
 ├── instruction.h             # Definições de instruções
 ├── main.c                    # Arquivo principal do projeto
 ├── aula01.mem                # Arquivo de memória para teste
+├── multiplicacao_entrega_corrigida.mem  # Arquivo de memória com instruções
 ├── multiplicacao_entrega.mem  # Arquivo de memória com instruções
 └── neander                   # Implementação de suporte ao projeto
 ```
