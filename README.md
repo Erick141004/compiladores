@@ -48,7 +48,7 @@ executor/
 
 ## Arquivo Específico para Compilação
 
-O arquivo **multiplicacao_entrega.mem** contém um conjunto de instruções que realiza a multiplicação de dois números armazenados na memória. Os números estão armazenados nas posições **0x80** e **0x81**, e o resultado da multiplicação será armazenado na última posição de memória disponível, **0xFF**, dentro do espaço de **256 bytes** de memória.
+O arquivo **multiplicacao_entrega_corrigida.mem** contém um conjunto de instruções que realiza a multiplicação de dois números armazenados na memória. Os números estão armazenados nas posições **0x80** e **0x81**, e o resultado da multiplicação será armazenado na última posição de memória disponível, **0xFF**, dentro do espaço de **256 bytes** de memória.
 
 Este arquivo foi testado e validado utilizando o simulador **Neander da UFRGS**.
 
