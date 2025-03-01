@@ -3,7 +3,7 @@ all:
 
 run: all
 	clear
-	./neander multiplicacao_entrega.mem
+	./neander multiplicacao_entrega_corrigida.mem
 
 clean:
 	rm -f neandermake 
