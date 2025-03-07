@@ -16,6 +16,7 @@ CODE* criar_code(uint8_t *content, int *start_index, long file_size, LISTA *l_da
     *start_index += strlen((const char*)code->instrucao) + 1;
 
     if(strcmp("HLT", (const char*)code->instrucao) == 0 || strcmp("NOT",(const char*) code->instrucao) == 0){
+        printf("ENTROU AQUI PARA O HLT\n");
         code->data = NULL;
     } else {
         char* variable_name = (char*)pegar_palavra(content, file_size, *start_index);

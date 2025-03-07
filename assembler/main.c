@@ -43,12 +43,13 @@ int main(int argc, char *argv[]){
         {
             case '.':
                 if(proximo_caracter_valido(content[i + 1])){
-                    printf("Achei um ponto\n");
+                    //printf("Achei um ponto\n");
                     char* teste = pegar_palavra(content, file_size, i + 1);
-                    printf("Palavra encontrada: %s - tamanho: %zu\n", teste, strlen(teste));
+                    //printf("Palavra encontrada: %s - tamanho: %zu\n", teste, strlen(teste));
                     i += strlen(teste) + 1;
                     executar_tarefa(teste, lista_data, lista_code, &i, content, file_size);
                 } else {
+                    printf("ERRO: sintaxe incorreta do arquivo\n");
                     return 0;
                 }
                 break;
@@ -65,6 +66,7 @@ int main(int argc, char *argv[]){
             case '\0':
                 return 0;    
             default:
+                printf("Caracter não mapeado\n");
                 break;
         }
     }

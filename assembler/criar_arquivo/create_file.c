@@ -33,25 +33,56 @@ void manipulating_file(LISTA *l_code, uint8_t* buffer, int size){
 
     LISTA *l_aux = l_code;
     int i = 4;
-    int data = 260;
+    LISTA *l_memory = criar_lista(None);
 
-    while(i < size/2 && l_aux->prox != NULL){
+    while(i < size && l_aux != NULL){
         CODE *code = (CODE*)l_aux->conteudo;
-        uint16_t valor = pegar_valores_instrucao(code->instrucao);
         
-        memcpy(&buffer[i], &valor, sizeof(valor));
+        if(code->data != NULL)
+        {   
+            uint32_t valor = pegar_valores_instrucao(code->instrucao);
+            memcpy(&buffer[i], &valor, sizeof(valor));
+            
+            int *index_memory = (int*)malloc(sizeof(int));
+            *index_memory = i + 2;
 
-        if(code->data)
-        {
-            uint16_t teste = (uint16_t)code->data->valor;   
-            memcpy(&buffer[data], &teste, sizeof(teste));
-
-            data += sizeof(teste);
+            adicionar_no(l_memory, index_memory, None);
+            
+            i += sizeof(valor);
+        } else {
+            printf("ENTROU AQUI------------\n");
+            uint16_t valor = pegar_valores_instrucao(code->instrucao);
+            memcpy(&buffer[i], &valor, sizeof(valor));
+            
+            i += sizeof(valor);
         }
 
-        i += sizeof(valor);
         l_aux = l_aux->prox;
     }
+
+    l_aux = l_code;
+
+    LISTA *l_aux_memory = l_memory;
+
+    while(l_aux != NULL){
+        CODE *code = (CODE*)l_aux->conteudo;
+        
+        if(code->data){
+            uint16_t teste = (uint16_t)code->data->valor;   
+            memcpy(&buffer[i], &teste, sizeof(teste));
+
+            int index_memory = *(int*)l_aux_memory->conteudo;
+            int conta = (i - 4)/2;
+            memcpy(&buffer[index_memory], &conta , sizeof(uint16_t));
+
+            l_aux_memory = l_aux_memory->prox;
+            i += sizeof(teste);
+        }
+
+        l_aux = l_aux->prox;
+    }
+
+    deletar_lista(l_memory);
 }
 
 uint16_t pegar_valores_instrucao(uint8_t* instrucao){

@@ -6,7 +6,8 @@
 
 typedef enum{
     Data,
-    Code
+    Code,
+    None
 } TIPO;
 
 typedef struct LISTA{

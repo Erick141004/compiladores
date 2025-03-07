@@ -30,7 +30,7 @@ char* pegar_palavra(uint8_t *content, long file_size, int index_inicial){
     }
     
     palavra[quantidade_letras] = '\0';
-    printf("PALAVRA PEGA: %s -------\n", palavra);
+    //printf("PALAVRA PEGA: %s -------\n", palavra);
 
     return palavra;
 }
