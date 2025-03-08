@@ -9,7 +9,7 @@ const Instrucao tabela_instrucao[] = {
     {"JN",  0x90}, {"JZ",  0xA0}, {"HLT", 0xF0}
 };
 
-void creating_file(LISTA* l_code){
+void creating_file(LISTA* l_code, int start_index_write){
     FILE *file = fopen("teste.mem", "wb");
     int size = 516;
 
@@ -19,20 +19,20 @@ void creating_file(LISTA* l_code){
     }
 
     uint8_t buffer[516] = {0};
-    manipulating_file(l_code, buffer, size);
+    manipulating_file(l_code, buffer, size, start_index_write);
 
     fwrite(buffer, 1, size, file);
 
     fclose(file);
 }
 
-void manipulating_file(LISTA *l_code, uint8_t* buffer, int size){
+void manipulating_file(LISTA *l_code, uint8_t* buffer, int size, int start_index_write){
     uint32_t magic = 0x034E4452;
     get_real_address(&magic, sizeof(uint32_t));
     memcpy(buffer, &magic, sizeof(magic));
 
     LISTA *l_aux = l_code;
-    int i = 4;
+    int i = 4 + (2 * start_index_write);
     LISTA *l_memory = criar_lista(None);
 
     while(i < size && l_aux != NULL){

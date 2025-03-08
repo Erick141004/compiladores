@@ -15,6 +15,6 @@ typedef struct DATA{
 } DATA;
 
 DATA* criar_data(uint8_t*, int*, long);
-void ler_data(uint8_t*, int*, long, LISTA*);
+int ler_data(uint8_t*, int*, long, LISTA*);
 
 #endif

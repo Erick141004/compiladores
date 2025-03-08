@@ -16,6 +16,6 @@ typedef struct{
 } CODE;
 
 CODE* criar_code(uint8_t *content, int *start_index, long file_size, LISTA *l_data);
-void ler_code(uint8_t *content, int *start_index, long file_size, LISTA *l_code, LISTA *l_data);
+int ler_code(uint8_t *content, int *start_index, long file_size, LISTA *l_code, LISTA *l_data);
 
 #endif

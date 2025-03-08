@@ -20,14 +20,14 @@ DATA* criar_data(uint8_t* content, int* index_inicial, long file_size){
 }
 
 //TODO: fazer essa funcao retornar um valor para tratar erros
-void ler_data(uint8_t* content, int* index_inicial, long file_size, LISTA* l) {
+int ler_data(uint8_t* content, int* index_inicial, long file_size, LISTA* l) {
     while (*index_inicial < file_size) {
         char c = content[*index_inicial];
 
         switch (c) {
             case '.':
                 (*index_inicial)--;
-                return;
+                return 0;
             case '\n':
                 (*index_inicial)++;
                 break;
@@ -38,7 +38,7 @@ void ler_data(uint8_t* content, int* index_inicial, long file_size, LISTA* l) {
                 *index_inicial = pular_espaco(content, file_size, *index_inicial);
                 break;
             case '\0':
-                return;
+                return 0;
             default:
                 DATA* data = criar_data(content, index_inicial, file_size);
                 if (data) {

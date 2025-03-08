@@ -6,14 +6,14 @@
 #include "estrutura_de_dados/lista.h"
 #include "criar_arquivo/create_file.h"
 
-void executar_tarefa(char *palavra, LISTA* l_data, LISTA *l_code, int *index_inicial, uint8_t* content, long file_size){   
+int executar_tarefa(char *palavra, LISTA* l_data, LISTA *l_code, int *index_inicial, uint8_t* content, long file_size){   
     if(strcmp(palavra, "DATA") == 0){
-        ler_data(content, index_inicial, file_size, l_data);
+        return ler_data(content, index_inicial, file_size, l_data);
     } else if(strcmp(palavra, "CODE") == 0) {
-        ler_code(content, index_inicial, file_size,l_code, l_data);
+        return ler_code(content, index_inicial, file_size,l_code, l_data);
     }
 
-    return;
+    return 0;
 }
 
 int main(int argc, char *argv[]){
@@ -38,6 +38,8 @@ int main(int argc, char *argv[]){
     LISTA* lista_data = criar_lista(Data);
     LISTA* lista_code = criar_lista(Code);
 
+    int start_index_write = 0;
+
     for(int i = 0; i < file_size; i++){
         switch (content[i])
         {
@@ -47,7 +49,7 @@ int main(int argc, char *argv[]){
                     char* teste = pegar_palavra(content, file_size, i + 1);
                     //printf("Palavra encontrada: %s - tamanho: %zu\n", teste, strlen(teste));
                     i += strlen(teste) + 1;
-                    executar_tarefa(teste, lista_data, lista_code, &i, content, file_size);
+                    start_index_write = executar_tarefa(teste, lista_data, lista_code, &i, content, file_size);
                 } else {
                     printf("ERRO: sintaxe incorreta do arquivo\n");
                     return 0;
@@ -71,7 +73,7 @@ int main(int argc, char *argv[]){
         }
     }
 
-    creating_file(lista_code);
+    creating_file(lista_code, start_index_write);
 
     imprimir_lista(lista_data, Data);
     imprimir_lista(lista_code, Code);
