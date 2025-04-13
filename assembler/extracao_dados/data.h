@@ -12,6 +12,7 @@ typedef struct DATA{
     uint8_t* nome;
     uint8_t *tipo_variavel;
     uint8_t valor;
+    int stored_index;
 } DATA;
 
 DATA* criar_data(uint8_t*, int*, long);

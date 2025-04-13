@@ -39,17 +39,24 @@ int main(int argc, char *argv[]){
     LISTA* lista_code = criar_lista(Code);
 
     int start_index_write = 0;
+    bool leu_data = false;
+    int length_data = 0;
 
     for(int i = 0; i < file_size; i++){
         switch (content[i])
         {
             case '.':
                 if(proximo_caracter_valido(content[i + 1])){
-                    //printf("Achei um ponto\n");
                     char* teste = pegar_palavra(content, file_size, i + 1);
-                    //printf("Palavra encontrada: %s - tamanho: %zu\n", teste, strlen(teste));
                     i += strlen(teste) + 1;
-                    start_index_write = executar_tarefa(teste, lista_data, lista_code, &i, content, file_size);
+
+                    if(leu_data){
+                        start_index_write = executar_tarefa(teste, lista_data, lista_code, &i, content, file_size);
+                    } else {
+                        length_data = executar_tarefa(teste, lista_data, lista_code, &i, content, file_size);
+                        leu_data = true;
+                    }
+
                 } else {
                     printf("ERRO: sintaxe incorreta do arquivo\n");
                     return 0;
@@ -73,7 +80,7 @@ int main(int argc, char *argv[]){
         }
     }
 
-    creating_file(lista_code, start_index_write);
+    creating_file(lista_code, start_index_write, length_data);
 
     imprimir_lista(lista_data, Data);
     imprimir_lista(lista_code, Code);

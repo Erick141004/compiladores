@@ -16,6 +16,7 @@ void adicionar_no(LISTA *l, void *conteudo, TIPO tipo){
         l->conteudo = conteudo;
         l->tipo = tipo;
         l->prox = NULL;
+
         return;
     }
 
@@ -33,9 +34,9 @@ void adicionar_no(LISTA *l, void *conteudo, TIPO tipo){
         novo_no->tipo = tipo;
         novo_no->prox = NULL;
         l->prox = novo_no;
+
         return;
     }
-
 }
 
 void* buscar_no(LISTA *l, void *conteudo, TIPO tipo){
@@ -46,6 +47,7 @@ void* buscar_no(LISTA *l, void *conteudo, TIPO tipo){
             case Data:
                 DATA *data = (DATA*)l_aux->conteudo;
                 char* data_compare = (char*) conteudo;
+                //printf("Data atual: %s ---- Data comparado: %s\n", data->nome, data_compare);
                 if(strcmp((const char*)data->nome, data_compare) == 0){
                     return data;
                 }
@@ -78,11 +80,14 @@ void imprimir_lista(LISTA *l, TIPO tipo){
 
                 if(strcmp("HLT", (const char*)code->instrucao) == 0 || strcmp("NOT",(const char*) code->instrucao) == 0){
                     printf("Instrucao: %s\n", code->instrucao);
-                } else{
+                } else if(strcmp("JMP", (const char*)code->instrucao) == 0 || strcmp("JZ", (const char*)code->instrucao) == 0 || strcmp("JN", (const char*)code->instrucao) == 0){
+                    printf("Instrucao: %s - Pulando para a linha: %d\n", code->instrucao, code->index_jump);
+                }
+                else{
                     printf("Instrucao: %s - Apontando para a variavel: %s\n", code->instrucao, code->data->nome);
                 }
                 break;
-            default:
+            default: 
                 break;
         }
         l_aux = l_aux->prox;

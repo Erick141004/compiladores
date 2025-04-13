@@ -16,16 +16,24 @@ CODE* criar_code(uint8_t *content, int *start_index, long file_size, LISTA *l_da
     *start_index += strlen((const char*)code->instrucao) + 1;
 
     if(strcmp("HLT", (const char*)code->instrucao) == 0 || strcmp("NOT",(const char*) code->instrucao) == 0){
-        printf("ENTROU AQUI PARA O HLT\n");
         code->data = NULL;
+        code->index_jump = -1;
+        code->tem_dois_bytes = false;
     } else {
         char* variable_name = (char*)pegar_palavra(content, file_size, *start_index);
         DATA* data = (DATA*)buscar_no(l_data, variable_name, Data);
-        
+
         if(data){
             code->data = data;
+            code->index_jump = -1;
+            code->tem_dois_bytes = true;
             *start_index += strlen((const char*)variable_name) + 1;
-        } else{
+        } else if(strcmp("JMP", (const char*)code->instrucao) == 0 || strcmp("JZ", (const char*)code->instrucao) == 0 || strcmp("JN", (const char*)code->instrucao) == 0){
+            code->data = NULL;
+            code->index_jump = atoi(variable_name);
+            code->tem_dois_bytes = true;
+            *start_index += strlen((const char*)variable_name) + 1;
+        } else {
             printf("\nERRO: Váriavel não definida em uso\n");
             return NULL;
         }

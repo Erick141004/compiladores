@@ -12,8 +12,8 @@ typedef struct {
     uint16_t codigo;
 } Instrucao;
 
-void creating_file(LISTA* l_code, int start_index_write);
-void manipulating_file(LISTA *l_code, uint8_t* buffer, int size, int start_index_write);
+void creating_file(LISTA* l_code, int start_index_write, int length_data);
+void manipulating_file(LISTA *l_code, uint8_t* buffer, int size, int start_index_write, int length_data);
 uint16_t pegar_valores_instrucao(uint8_t* instrucao);
 
 #endif
