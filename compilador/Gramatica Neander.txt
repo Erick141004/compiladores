@@ -1,0 +1,38 @@
+﻿<program> ::= <header> <inicio> <statement> "\n" <RES> "\n" <fim>
+
+
+<header> ::= "PROGRAMA " "\"" <var> "\"" ":" "\n"
+<inicio> ::= "INICIO\n"
+<fim> ::= "FIM"
+<RES> ::= "RES" <espacos> "=" <espacos> <expressao>
+
+
+<statement> ::= <atribuicao>
+              | <statement> "\n" <statement>
+
+
+<atribuicao> ::= <espacos> <var> <espacos> "=" <espacos> <expressao>
+
+
+<expressao> ::= <expressao1> ( <espacos> <adicao> <espacos> <expressao1> )*
+<expressao1> ::= <expressao2> ( <espacos> <mult> <espacos> <expressao2> )*
+<expressao2> ::= <num>
+              | <var>
+              | "(" <espacos> <expressao> <espacos> ")"
+
+
+<adicao> ::= "+" | "-"
+<mult> ::= "*" | "/"
+
+
+<espacos> ::= (" " | "\t")*
+
+
+
+
+<var> ::= ([a-z] | [A-Z])+
+
+
+<num> ::= <positivo> | <negativo>
+<positivo> ::= ("0" | [1-9] [0-9]*)
+<negativo> ::= "-" <positivo>
