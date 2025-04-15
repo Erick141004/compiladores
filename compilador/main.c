@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "parser.h"
 #include "tokens.h"
+#include "lista.h"
 
 int main(int argc, char **argv){
     (void) argc;
@@ -23,8 +24,13 @@ int main(int argc, char **argv){
     fread(content, 1, file_size, file);
     fclose(file);
 
-    Token teste;
+    Token token;
     int pos_atual = 0;
+    LISTA *variaveis = criar_lista(Data);
+    LISTA *instrucoes = criar_lista(Code);
+
+    token = proximo_token(content, &pos_atual);
+    parse_program(content, &pos_atual, &token);
 
     return 0;
 }

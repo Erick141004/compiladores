@@ -1,20 +1,16 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-void parse_program();
-void parse_header();
-void parse_inicio();
-void parse_fim();
-void parse_res();
-void parse_statement();
-void parse_atribuicao();
-void parse_expressao();
-void parse_expressao1();
-void parse_expressao2();
-void parse_adicao();
-void parse_mult();
-void parse_espacos();
-void parse_var();
-void parse_num();
+#include "tokens.h"
+#include <stdint.h>
+
+void parse_program(uint8_t *content, int *pos_atual, Token *token);
+void parse_header(uint8_t *content, int *pos_atual, Token *token);
+void parse_res(uint8_t *content, int *pos_atual, Token *token);
+void parse_atribuicao(uint8_t *content, int *pos_atual, Token *token);
+void parse_statement(uint8_t *content, int *pos_atual, Token *token);
+void parse_expressao(uint8_t *content, int *pos_atual, Token *token);
+void parse_expressao1(uint8_t *content, int *pos_atual, Token *token);
+void parse_expressao2(uint8_t *content, int *pos_atual, Token *token);
 
 #endif

@@ -1,0 +1,6 @@
+PROGRAMA "u":
+INICIO
+A = 7 + 8
+B = 5
+RES = (A + B) * B
+FIM
