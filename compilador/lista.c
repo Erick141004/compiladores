@@ -1,26 +1,24 @@
 #include "lista.h"
 #include "codificador.h"
 
-LISTA* criar_lista(TIPO tipo){
+LISTA* criar_lista(){
     LISTA *l = (LISTA*)malloc(sizeof(LISTA));
     l->conteudo = NULL;
-    l->tipo = tipo;
     l->prox = NULL;
 
     return l;
 }
 
-void adicionar_no(LISTA *l, void *conteudo, TIPO tipo){
+void adicionar_no(LISTA *l, void *conteudo){
     if(l->conteudo == NULL){
         l->conteudo = conteudo;
-        l->tipo = tipo;
         l->prox = NULL;
 
         return;
     }
 
     if(l->prox != NULL)
-        adicionar_no(l->prox, conteudo, tipo);
+        adicionar_no(l->prox, conteudo);
     else {
         LISTA *novo_no = (LISTA*)malloc(sizeof(LISTA));
 
@@ -30,7 +28,6 @@ void adicionar_no(LISTA *l, void *conteudo, TIPO tipo){
         }
 
         novo_no->conteudo = conteudo;
-        novo_no->tipo = tipo;
         novo_no->prox = NULL;
         l->prox = novo_no;
 
@@ -38,57 +35,30 @@ void adicionar_no(LISTA *l, void *conteudo, TIPO tipo){
     }
 }
 
-void* buscar_no(LISTA *l, void *conteudo, TIPO tipo){
+void* buscar_no(LISTA *l, void *conteudo){
     LISTA *l_aux = l;
     
     while(l_aux != NULL){
-        switch (tipo) {
-            case Data:
-                DATA *data = (DATA*)l_aux->conteudo;
-                char* data_compare = (char*) conteudo;
-                //printf("Data atual: %s ---- Data comparado: %s\n", data->nome, data_compare);
-                // if(strcmp((const char*)data->nome, data_compare) == 0){
-                //     return data;
-                // }
-            default:
-                break;
-        }
-
+        DATA *data = (DATA*)l_aux->conteudo;
+        char* data_compare = (char*) conteudo;
+        //printf("Data atual: %s ---- Data comparado: %s\n", data->nome, data_compare);
+        // if(strcmp((const char*)data->nome, data_compare) == 0){
+        //     return data;
+        // }
+        
         l_aux = l_aux->prox;
     }
 
     return NULL;
 }
 
-void imprimir_lista(LISTA *l, TIPO tipo){
+void imprimir_lista(LISTA *l){
     LISTA *l_aux = l;
 
-    if(tipo == Data)
-        printf("Imprimindo DATA:\n\n");
-    else 
-        printf("Imprimindo CODE:\n\n");
-
     while(l_aux != NULL){
-        switch (tipo) {
-            case Data:
-                DATA *data = (DATA*)l_aux->conteudo;
-                //printf("Nome variavel: %s - Tipo variavel: %s - Valor: %d\n", data->nome, data->tipo_variavel, data->valor);
-                break;
-            case Code:
-                CODE *code = (CODE*)l_aux->conteudo;
-
-                // if(strcmp("HLT", (const char*)code->instrucao) == 0 || strcmp("NOT",(const char*) code->instrucao) == 0){
-                //     printf("Instrucao: %s\n", code->instrucao);
-                // } else if(strcmp("JMP", (const char*)code->instrucao) == 0 || strcmp("JZ", (const char*)code->instrucao) == 0 || strcmp("JN", (const char*)code->instrucao) == 0){
-                //     printf("Instrucao: %s - Pulando para a linha: %d\n", code->instrucao, code->index_jump);
-                // }
-                // else{
-                //     printf("Instrucao: %s - Apontando para a variavel: %s\n", code->instrucao, code->data->nome);
-                // }
-                break;
-            default: 
-                break;
-        }
+        DATA *data = (DATA*)l_aux->conteudo;
+        printf("Nome variavel: %s - Tipo variavel: %s - Valor: %s\n", data->nome_variavel, data->tipo_variavel, data->valor);
+ 
         l_aux = l_aux->prox;
     }
 
@@ -101,7 +71,8 @@ void deletar_lista(LISTA *l){
         l = l->prox; 
 
         if(l_aux->conteudo != NULL){
-            free(l_aux->conteudo);
+            DATA *d = (DATA *) l_aux->conteudo;
+            limpar_data(d);
         }
 
         free(l_aux);

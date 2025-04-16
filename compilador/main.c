@@ -5,6 +5,7 @@
 #include "parser.h"
 #include "tokens.h"
 #include "lista.h"
+#include "arvore.h"
 
 int main(int argc, char **argv){
     (void) argc;
@@ -26,11 +27,15 @@ int main(int argc, char **argv){
 
     Token token;
     int pos_atual = 0;
-    LISTA *variaveis = criar_lista(Data);
-    LISTA *instrucoes = criar_lista(Code);
+    LISTA *variaveis = criar_lista();
 
     token = proximo_token(content, &pos_atual);
-    parse_program(content, &pos_atual, &token);
+    NO* no = parse_program(content, &pos_atual, &token, variaveis);
+
+    imprimir_arvore(no, 1);
+    imprimir_lista(variaveis);
+    limpar_arvore(no);
+    deletar_lista(variaveis);
 
     return 0;
 }

@@ -3,88 +3,139 @@
 #include "parser.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "arvore.h"
+#include "lista.h"
+#include "codificador.h"
 
 void error(const char *msg) {
     fprintf(stderr, "Erro: %s\n", msg);
     exit(EXIT_FAILURE);
 }
 
-void parse_expressao2(uint8_t *content, int *pos_atual, Token *token){
+NO* parse_expressao2(uint8_t *content, int *pos_atual, Token *token){
+    Token t = *token;
+    
     if(token->tipo == TK_NUM){
         printf("LDC %s\n", token->lexema);
         consumir_token(TK_NUM, token, content, pos_atual);
+        return inserir_no_variavel(t.lexema, NUM);
     } else if(token->tipo == TK_VAR){
         printf("LDA %s\n", token->lexema);
         consumir_token(TK_VAR, token, content, pos_atual);
+        return inserir_no_variavel(t.lexema, VAR);
     } else if(token->tipo == TK_EPAREN){
         consumir_token(TK_EPAREN, token, content, pos_atual);
-        parse_expressao(content, pos_atual, token);
+        NO* no = parse_expressao(content, pos_atual, token);
         consumir_token(TK_DPAREN, token, content, pos_atual);
+        return no;
     } else{
         error("erro ao fazer o parser - Token inesperado");
+        return NULL;
     }
 }
 
-void parse_expressao1(uint8_t *content, int *pos_atual, Token *token){
-    parse_expressao2(content, pos_atual, token);
+NO* parse_expressao1(uint8_t *content, int *pos_atual, Token *token){
+    NO* esq = parse_expressao2(content, pos_atual, token);
 
     while(token->tipo == TK_MULT || token->tipo == TK_DIV){
         TokenType op = token->tipo;
         
         consumir_token(op, token, content, pos_atual);
-        
+        NO* dir = parse_expressao2(content, pos_atual, token);
+
+        NO *no_pai;
         if (op == TK_MULT)
-            printf("MUL %s\n", token->lexema);
+            no_pai = inserir_no_operacao(esq, dir, '*');
         else
-            printf("DIV %s\n", token->lexema);
+            no_pai = inserir_no_operacao(esq, dir, '/');
 
-        parse_expressao2(content, pos_atual, token);
-
+        esq = no_pai;
     }
+
+    return esq;
 }  
 
-void parse_expressao(uint8_t *content, int *pos_atual, Token *token){
-    parse_expressao1(content, pos_atual, token);
+NO* parse_expressao(uint8_t *content, int *pos_atual, Token *token){
+    NO* esq = parse_expressao1(content, pos_atual, token);
 
     while(token->tipo == TK_SOMA || token->tipo == TK_SUB){
         TokenType op = token->tipo;
         consumir_token(op, token, content, pos_atual);
-        
-        if (op == TK_SOMA)
-            printf("SOMA %s\n", token->lexema);
-        else
-            printf("SUB %s\n", token->lexema);
+        NO* dir = parse_expressao1(content, pos_atual, token);
 
-        parse_expressao1(content, pos_atual, token);
+        NO *no_pai;
+        if (op == TK_SOMA)
+            no_pai = inserir_no_operacao(esq, dir, '+');
+        else
+            no_pai = inserir_no_operacao(esq, dir, '-');
+
+        esq = no_pai;
     }
+
+    return esq;
 }
 
-void parse_atribuicao(uint8_t *content, int *pos_atual, Token *token){
+NO* parse_atribuicao(uint8_t *content, int *pos_atual, Token *token, LISTA* variaveis){
     Token atual = *token;
+
+    NO* no_raiz = inserir_no_variavel(atual.lexema, VAR);
+
     consumir_token(TK_VAR, token, content, pos_atual);
     consumir_token(TK_ATRIBUICAO, token, content, pos_atual);
     printf("; Processando atribuição para %s\n", atual.lexema);
-    parse_expressao(content, pos_atual, token);
+    no_raiz->filho_esq = parse_expressao(content, pos_atual, token);
+
+    DATA *d;
+
+    if(tem_filhos(no_raiz->filho_esq)){
+        d = criar_data(atual.lexema, "DB", no_raiz->filho_esq->valor, false);
+    } else {
+        d = criar_data(atual.lexema, "DB", NULL, true);
+    }
+
+    adicionar_no(variaveis, d);
+
     printf("STA %s\n", atual.lexema);
+
+    return no_raiz;
 }
 
-void parse_statement(uint8_t *content, int *pos_atual, Token *token){
-    parse_atribuicao(content, pos_atual, token);
+NO* parse_statement(uint8_t *content, int *pos_atual, Token *token, LISTA* variaveis){
+    NO* raiz = parse_atribuicao(content, pos_atual, token, variaveis);
 
     while(token->tipo == TK_NOVALINHA){
         consumir_token(TK_NOVALINHA, token, content, pos_atual);
         if(token->tipo == TK_VAR){
-            parse_atribuicao(content, pos_atual, token);
+            NO* prox = parse_atribuicao(content, pos_atual, token, variaveis);
+            raiz = inserir_no_seq(raiz, prox);
         }
     }
+
+    return raiz;
 }
 
-void parse_res(uint8_t *content, int *pos_atual, Token *token){
+NO* parse_res(uint8_t *content, int *pos_atual, Token *token, LISTA* variaveis){
+    NO* res = inserir_no_variavel("RES", VAR);
+
     consumir_token(TK_RES, token, content, pos_atual);
     consumir_token(TK_ATRIBUICAO, token, content, pos_atual);
     printf("; Processando instrução RES\n");
-    parse_expressao(content, pos_atual, token);
+
+    res->filho_esq = parse_expressao(content, pos_atual, token);
+    
+    DATA* d;
+
+    if(tem_filhos(res->filho_esq)){
+        d = criar_data("RES", "DB", res->filho_esq->valor, false);
+    } else {
+        d = criar_data("RES", "DB", NULL, true);
+    }
+
+    adicionar_no(variaveis, d);
+
     printf("STA RES\n");
+
+    return res;
 }
 
 void parse_header(uint8_t *content, int *pos_atual, Token *token){
@@ -104,12 +155,16 @@ void parse_header(uint8_t *content, int *pos_atual, Token *token){
     consumir_token(TK_NOVALINHA, token, content, pos_atual);
 }
 
-void parse_program(uint8_t *content, int *pos_atual, Token *token){
+NO* parse_program(uint8_t *content, int *pos_atual, Token *token, LISTA *variaveis){
     parse_header(content, pos_atual, token);
     consumir_token(TK_INICIO, token, content, pos_atual);
     consumir_token(TK_NOVALINHA, token, content, pos_atual);
-    parse_statement(content, pos_atual, token);
-    parse_res(content, pos_atual, token);
+    
+    NO* no_atribuicao = parse_statement(content, pos_atual, token, variaveis);
+    NO* no_res = parse_res(content, pos_atual, token, variaveis);
+    
     consumir_token(TK_NOVALINHA, token, content, pos_atual);
     consumir_token(TK_FIM, token, content, pos_atual);
+
+    return inserir_no_seq(no_atribuicao, no_res);
 }
