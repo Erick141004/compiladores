@@ -1,0 +1,23 @@
+; Assembly gerado do programa "u"
+
+.DATA
+A DB ?
+B DB 5
+RES DB ?
+TEMP_0 DB ?
+TEMP_1 DB ?
+
+.CODE
+.ORG 0
+LDA TEMP_0
+ADD 7
+STA TEMP_0
+LDA TEMP_1
+ADD 8
+STA TEMP_1
+LDA TEMP_0
+ADD TEMP_1
+STA A
+STA B
+STA RES
+HLT

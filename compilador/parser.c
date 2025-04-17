@@ -78,12 +78,13 @@ NO* parse_expressao(uint8_t *content, int *pos_atual, Token *token){
 NO* parse_atribuicao(uint8_t *content, int *pos_atual, Token *token, LISTA* variaveis){
     Token atual = *token;
 
-    NO* no_raiz = inserir_no_variavel(atual.lexema, VAR);
+    NO* no_raiz = inserir_no_variavel(atual.lexema, ATRIB);
 
     consumir_token(TK_VAR, token, content, pos_atual);
     consumir_token(TK_ATRIBUICAO, token, content, pos_atual);
     printf("; Processando atribuição para %s\n", atual.lexema);
     no_raiz->filho_esq = parse_expressao(content, pos_atual, token);
+    no_raiz->filho_esq->no_pai = no_raiz;
 
     DATA *d;
 
@@ -115,7 +116,7 @@ NO* parse_statement(uint8_t *content, int *pos_atual, Token *token, LISTA* varia
 }
 
 NO* parse_res(uint8_t *content, int *pos_atual, Token *token, LISTA* variaveis){
-    NO* res = inserir_no_variavel("RES", VAR);
+    NO* res = inserir_no_variavel("RES", ATRIB);
 
     consumir_token(TK_RES, token, content, pos_atual);
     consumir_token(TK_ATRIBUICAO, token, content, pos_atual);
@@ -138,7 +139,7 @@ NO* parse_res(uint8_t *content, int *pos_atual, Token *token, LISTA* variaveis){
     return res;
 }
 
-void parse_header(uint8_t *content, int *pos_atual, Token *token){
+uint8_t* parse_header(uint8_t *content, int *pos_atual, Token *token){
     consumir_token(TK_PROG, token, content, pos_atual);
     pular_espacos(content, pos_atual);
     consumir_token(TK_ASPAS, token, content, pos_atual);
@@ -146,6 +147,9 @@ void parse_header(uint8_t *content, int *pos_atual, Token *token){
     if (token->tipo != TK_VAR)
         error("Esperava identificador no label do programa.");
     
+    uint8_t *nome_programa = (uint8_t *)malloc(strlen(token->lexema) + 1);
+    strcpy(nome_programa, token->lexema);
+
     printf("; Definindo o programa: %s\n", token->lexema);
     
     consumir_token(TK_VAR, token, content, pos_atual);
@@ -153,10 +157,12 @@ void parse_header(uint8_t *content, int *pos_atual, Token *token){
     pular_espacos(content, pos_atual);
     consumir_token(TK_DOISPONTOS, token, content, pos_atual);
     consumir_token(TK_NOVALINHA, token, content, pos_atual);
+
+    return nome_programa;
 }
 
 NO* parse_program(uint8_t *content, int *pos_atual, Token *token, LISTA *variaveis){
-    parse_header(content, pos_atual, token);
+    uint8_t *nome = parse_header(content, pos_atual, token);
     consumir_token(TK_INICIO, token, content, pos_atual);
     consumir_token(TK_NOVALINHA, token, content, pos_atual);
     
@@ -166,5 +172,9 @@ NO* parse_program(uint8_t *content, int *pos_atual, Token *token, LISTA *variave
     consumir_token(TK_NOVALINHA, token, content, pos_atual);
     consumir_token(TK_FIM, token, content, pos_atual);
 
-    return inserir_no_seq(no_atribuicao, no_res);
+    NO* no_raiz = inserir_no_seq(no_atribuicao, no_res);
+    no_raiz->valor = (uint8_t *)malloc(sizeof(uint8_t) * strlen(nome) + 1);
+    strcpy(no_raiz->valor, nome);
+
+    return no_raiz;
 }

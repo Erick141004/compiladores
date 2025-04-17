@@ -4,13 +4,14 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef enum {SEQ, VAR, NUM, OP} TypeNode;
+typedef enum {SEQ, VAR, NUM, OP, ATRIB} TypeNode;
 
 typedef struct No{
     TypeNode tipo;
     uint8_t *valor;
     struct No *filho_esq;
     struct No *filho_dir;
+    struct No *no_pai;
 } NO;
 
 NO* inserir_no_operacao(NO* dir, NO* esq, uint8_t operador);

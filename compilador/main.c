@@ -6,6 +6,7 @@
 #include "tokens.h"
 #include "lista.h"
 #include "arvore.h"
+#include "create_file.h"
 
 int main(int argc, char **argv){
     (void) argc;
@@ -34,6 +35,7 @@ int main(int argc, char **argv){
 
     imprimir_arvore(no, 1);
     imprimir_lista(variaveis);
+    criar_arquivo(variaveis, no);
     limpar_arvore(no);
     deletar_lista(variaveis);
 

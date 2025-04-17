@@ -42,9 +42,9 @@ void* buscar_no(LISTA *l, void *conteudo){
         DATA *data = (DATA*)l_aux->conteudo;
         char* data_compare = (char*) conteudo;
         //printf("Data atual: %s ---- Data comparado: %s\n", data->nome, data_compare);
-        // if(strcmp((const char*)data->nome, data_compare) == 0){
-        //     return data;
-        // }
+        if(strcmp((const char*)data->nome_variavel, data_compare) == 0){
+            return data;
+        }
         
         l_aux = l_aux->prox;
     }

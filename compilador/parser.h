@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 NO* parse_program(uint8_t *content, int *pos_atual, Token *token, LISTA *variaveis);
-void parse_header(uint8_t *content, int *pos_atual, Token *token);
+uint8_t* parse_header(uint8_t *content, int *pos_atual, Token *token);
 NO* parse_res(uint8_t *content, int *pos_atual, Token *token, LISTA *variaveis);
 NO* parse_atribuicao(uint8_t *content, int *pos_atual, Token *token, LISTA *variaveis);
 NO* parse_statement(uint8_t *content, int *pos_atual, Token *token, LISTA *variaveis);
