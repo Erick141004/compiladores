@@ -54,40 +54,78 @@ void gerar_codigo(NO *raiz, FILE* assembly, LISTA*data, int *valor_temp){
                     fprintf(assembly, "DIV %s\n", raiz->filho_dir->valor);
             }
         }
-        else if(raiz->tipo == VAR){
-            fprintf(assembly, "LDA %s\n", raiz->filho_esq->valor);
-
-            //X = A + 8
-            if(raiz->filho_dir->tipo == NUM){
-                if (strcmp(raiz->valor, "+") == 0)
-                    fprintf(assembly, "ADD TEMP_%d\n", *valor_temp);
-                else if (strcmp(raiz->valor, "-") == 0)
-                    fprintf(assembly, "SUB TEMP_%d\n", *valor_temp);
-                else if (strcmp(raiz->valor, "*") == 0)
-                    fprintf(assembly, "MUL TEMP_%d\n", *valor_temp);
-                else if (strcmp(raiz->valor, "/") == 0)
-                    fprintf(assembly, "DIV TEMP_%d\n", *valor_temp);
-            
-                if(*valor_temp == 0)
-                    *valor_temp = 1;
-                else
-                    *valor_temp = 0;
-            } 
-            //X = A + B
-            else{
-                if (strcmp(raiz->valor, "+") == 0)
-                    fprintf(assembly, "ADD %s\n", raiz->filho_dir->valor);
-                else if (strcmp(raiz->valor, "-") == 0)
-                    fprintf(assembly, "SUB %s\n", raiz->filho_dir->valor);
-                else if (strcmp(raiz->valor, "*") == 0)
-                    fprintf(assembly, "MUL %s\n", raiz->filho_dir->valor);
-                else if (strcmp(raiz->valor, "/") == 0)
-                    fprintf(assembly, "DIV %s\n", raiz->filho_dir->valor);
+        else if(raiz->tipo == OP){
+            if(raiz->filho_esq->tipo != OP && raiz->filho_dir->tipo != OP)
+                fprintf(assembly, "LDA %s\n", raiz->filho_esq->valor);
+            else {
+                if(raiz->filho_esq->tipo != OP){
+                    if(raiz->filho_esq->tipo == NUM){
+                        if (strcmp(raiz->valor, "+") == 0)
+                            fprintf(assembly, "ADD TEMP_%d\n", *valor_temp);
+                        else if (strcmp(raiz->valor, "-") == 0)
+                            fprintf(assembly, "SUB TEMP_%d\n", *valor_temp);
+                        else if (strcmp(raiz->valor, "*") == 0)
+                            fprintf(assembly, "MUL TEMP_%d\n", *valor_temp);
+                        else if (strcmp(raiz->valor, "/") == 0)
+                            fprintf(assembly, "DIV TEMP_%d\n", *valor_temp);
+                    
+                        if(*valor_temp == 0)
+                            *valor_temp = 1;
+                        else
+                            *valor_temp = 0;
+                    } 
+                    //X = A + B
+                    else{
+                        if (strcmp(raiz->valor, "+") == 0)
+                            fprintf(assembly, "ADD %s\n", raiz->filho_esq->valor);
+                        else if (strcmp(raiz->valor, "-") == 0)
+                            fprintf(assembly, "SUB %s\n", raiz->filho_esq->valor);
+                        else if (strcmp(raiz->valor, "*") == 0)
+                            fprintf(assembly, "MUL %s\n", raiz->filho_esq->valor);
+                        else if (strcmp(raiz->valor, "/") == 0)
+                            fprintf(assembly, "DIV %s\n", raiz->filho_esq->valor);
+                    }
+                }
             }
+
+            if(raiz->filho_dir->tipo != OP){
+                //X = A + 8
+                if(raiz->filho_dir->tipo == NUM){
+                    if (strcmp(raiz->valor, "+") == 0)
+                        fprintf(assembly, "ADD TEMP_%d\n", *valor_temp);
+                    else if (strcmp(raiz->valor, "-") == 0)
+                        fprintf(assembly, "SUB TEMP_%d\n", *valor_temp);
+                    else if (strcmp(raiz->valor, "*") == 0)
+                        fprintf(assembly, "MUL TEMP_%d\n", *valor_temp);
+                    else if (strcmp(raiz->valor, "/") == 0)
+                        fprintf(assembly, "DIV TEMP_%d\n", *valor_temp);
+                
+                    if(*valor_temp == 0)
+                        *valor_temp = 1;
+                    else
+                        *valor_temp = 0;
+                } 
+                //X = A + B
+                else{
+                    if (strcmp(raiz->valor, "+") == 0)
+                        fprintf(assembly, "ADD %s\n", raiz->filho_dir->valor);
+                    else if (strcmp(raiz->valor, "-") == 0)
+                        fprintf(assembly, "SUB %s\n", raiz->filho_dir->valor);
+                    else if (strcmp(raiz->valor, "*") == 0)
+                        fprintf(assembly, "MUL %s\n", raiz->filho_dir->valor);
+                    else if (strcmp(raiz->valor, "/") == 0)
+                        fprintf(assembly, "DIV %s\n", raiz->filho_dir->valor);
+                }
+            }
+          
         }
 
         if(raiz->tipo == ATRIB){
-            fprintf(assembly, "STA %s\n", raiz->valor);
+            DATA *d = (DATA *) buscar_no(data, raiz->valor);
+
+            if(d->expressao)
+                fprintf(assembly, "STA %s\n", raiz->valor);
+            
             return;
         }
 
@@ -105,7 +143,7 @@ void gerar_codigo(NO *raiz, FILE* assembly, LISTA*data, int *valor_temp){
 }
 
 void criar_arquivo(LISTA *lista_data, NO *raiz){
-    FILE *assembly = fopen("assembly.asm", "w");
+    FILE *assembly = fopen("programa.asm", "w");
 
     if(assembly == NULL){
         printf("Nao foi possivel criar o arquivo\n");

@@ -10,7 +10,7 @@ const Instrucao tabela_instrucao[] = {
 };
 
 void creating_file(LISTA* l_code, int start_index_write, int length_data){
-    FILE *file = fopen("teste.mem", "wb");
+    FILE *file = fopen("programa.mem", "wb");
     int size = 516;
 
     if(file == NULL){
