@@ -11,6 +11,9 @@
 
 void criar_arquivo(LISTA *lista_data, NO *raiz);
 void gerar_data(LISTA *lista_data, FILE* assembly);
-void gerar_codigo(NO *raiz, FILE* assembly, LISTA *data, int *valor_temp);
+void gerar_codigo(NO *raiz, FILE* assembly, LISTA*data, int *valor_temp, int *qtd_linhas, bool *ja_computou);
+void escrever_valor(FILE *assembly, NO *raiz, int valor_temp, NO* filho, int *qtd_linhas, LISTA *lista);
+int gerar_multiplicacao(FILE *assembly, int *qtd_linhas);
+int gerar_subtracao(FILE *assembly, int *qtd_linhas);
 
 #endif

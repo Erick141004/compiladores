@@ -123,7 +123,8 @@ NO* parse_res(uint8_t *content, int *pos_atual, Token *token, LISTA* variaveis){
     printf("; Processando instrução RES\n");
 
     res->filho_esq = parse_expressao(content, pos_atual, token);
-    
+    res->filho_esq->no_pai = res;
+
     DATA* d;
 
     if(tem_filhos(res->filho_esq)){

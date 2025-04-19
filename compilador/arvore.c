@@ -18,6 +18,17 @@ NO* inserir_no_operacao(NO* esq, NO* dir, uint8_t operador){
     return novo;
 }
 
+NO* encontrar_primeiro_atrib(NO *raiz){
+    if(raiz == NULL)
+        return NULL;
+    else{
+        if(raiz->tipo == ATRIB)
+            return raiz;
+        
+        encontrar_primeiro_atrib(raiz->no_pai);
+    }
+}
+
 NO* inserir_no_variavel(uint8_t *nome_var, TypeNode tipo){
     NO *novo = (NO *) malloc(sizeof(NO));
     novo->filho_esq = NULL;

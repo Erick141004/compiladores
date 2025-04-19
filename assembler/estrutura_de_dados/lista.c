@@ -81,7 +81,11 @@ void imprimir_lista(LISTA *l, TIPO tipo){
                 if(strcmp("HLT", (const char*)code->instrucao) == 0 || strcmp("NOT",(const char*) code->instrucao) == 0){
                     printf("Instrucao: %s\n", code->instrucao);
                 } else if(strcmp("JMP", (const char*)code->instrucao) == 0 || strcmp("JZ", (const char*)code->instrucao) == 0 || strcmp("JN", (const char*)code->instrucao) == 0){
-                    printf("Instrucao: %s - Pulando para a linha: %d\n", code->instrucao, code->index_jump);
+                    if(code->data == NULL){
+                        printf("Instrucao: %s - Pulando para a linha: %d\n", code->instrucao, code->index_jump);
+                    } else {
+                        printf("Instrucao: %s - Apontando para a variavel: %s\n", code->instrucao, code->data->nome);
+                    }
                 }
                 else{
                     printf("Instrucao: %s - Apontando para a variavel: %s\n", code->instrucao, code->data->nome);
