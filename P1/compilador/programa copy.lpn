@@ -1,0 +1,6 @@
+PROGRAMA "programa":
+INICIO
+A = 4
+B = 5
+RES = A + B
+FIM

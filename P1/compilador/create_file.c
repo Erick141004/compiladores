@@ -30,12 +30,73 @@ void escrever_valor(FILE *assembly, NO *raiz, int valor_temp, NO* filho, int *qt
             (*qtd_linhas)++;
         }
         else if (strcmp(raiz->valor, "-") == 0){
-            fprintf(assembly, "SUB LIT_%d\n", valor_temp);
-            (*qtd_linhas)++;
+            if(!proxima_operacao_soma(raiz->filho_esq) || !proxima_operacao_soma(raiz->filho_dir)){
+                fprintf(assembly, "LDA %s\n", encontrar_primeiro_atrib(raiz)->valor);
+                (*qtd_linhas)++;
+            }
+
+            uint8_t nome[20];
+            snprintf(nome, sizeof(nome), "PULAR_%d", (*qtd_linhas) + 7);
+
+            char buffer[12];
+            snprintf(buffer, sizeof(buffer), "%d", (*qtd_linhas) + 7);
+
+            DATA *d = criar_data(nome, "DB", (uint8_t *)buffer, false);
+            adicionar_no(lista, d);
+
+            fprintf(assembly, "STA TEMP_0\n");
+            fprintf(assembly, "LDA LIT_%d\n", valor_temp);
+            fprintf(assembly, "STA TEMP_1\n");
+            fprintf(assembly, "LDA %s\n", nome);
+            fprintf(assembly, "STA TEMP_2\n");
+            fprintf(assembly, "JMP SUB\n");
+            
+            if(raiz->no_pai->tipo != ATRIB){
+                fprintf(assembly, "STA %s\n", encontrar_primeiro_atrib(raiz)->valor);
+                fprintf(assembly, "LDA ZERO\n");
+                fprintf(assembly, "STA TEMP_0\n");
+                fprintf(assembly, "STA TEMP_1\n");
+                fprintf(assembly, "STA TEMP_2\n");
+                
+                (*qtd_linhas) += 5;
+            }
+
+            (*qtd_linhas) += 6;
         }
         else if (strcmp(raiz->valor, "*") == 0){
-            fprintf(assembly, "MUL LIT_%d\n", valor_temp);
-            (*qtd_linhas)++;
+            if(!proxima_operacao_soma(raiz->filho_esq) || !proxima_operacao_soma(raiz->filho_dir)){
+                fprintf(assembly, "LDA %s\n", encontrar_primeiro_atrib(raiz)->valor);
+                (*qtd_linhas)++;
+            }
+
+            uint8_t nome[20];
+            snprintf(nome, sizeof(nome), "PULAR_%d", (*qtd_linhas) + 7);
+
+            char buffer[12];
+            snprintf(buffer, sizeof(buffer), "%d", (*qtd_linhas) + 7);
+
+            DATA *d = criar_data(nome, "DB", (uint8_t *)buffer, false);
+            adicionar_no(lista, d);
+
+            fprintf(assembly, "STA TEMP_0\n");
+            fprintf(assembly, "LDA LIT_%d\n", valor_temp);
+            fprintf(assembly, "STA TEMP_1\n");
+            fprintf(assembly, "LDA %s\n", nome);
+            fprintf(assembly, "STA TEMP_2\n");
+            fprintf(assembly, "JMP MUL\n");
+            
+            if(raiz->no_pai->tipo != ATRIB){
+                fprintf(assembly, "STA %s\n", encontrar_primeiro_atrib(raiz)->valor);
+                fprintf(assembly, "LDA ZERO\n");
+                fprintf(assembly, "STA TEMP_0\n");
+                fprintf(assembly, "STA TEMP_1\n");
+                fprintf(assembly, "STA TEMP_2\n");
+                fprintf(assembly, "STA TEMP_3\n");
+
+                (*qtd_linhas) += 6;
+            }
+            
+            (*qtd_linhas) += 6;
         }
         else if (strcmp(raiz->valor, "/") == 0){
             fprintf(assembly, "DIV LIT_%d\n", valor_temp);
@@ -131,19 +192,7 @@ void gerar_codigo(NO *raiz, FILE* assembly, LISTA*data, int *valor_temp, int *qt
         gerar_codigo(raiz->filho_dir, assembly, data, valor_temp, qtd_linhas, ja_computou);
 
         if(raiz->filho_esq->tipo == NUM && raiz->tipo != ATRIB){
-            // fprintf(assembly, "LDA TEMP_%d\n", *valor_temp);
-            // (*qtd_linhas)++;
-
-            // //X = 7 + 8
-            // if(raiz->filho_dir->tipo == NUM){
-            //     *valor_temp = *valor_temp == 0 ? 1 : 0;
-
-            //     escrever_valor(assembly, raiz, *valor_temp, NULL, qtd_linhas, data);
-            // } 
-            // //X = 7 + A
-            // else{
-            //     escrever_valor(assembly, raiz, -1, raiz->filho_dir, qtd_linhas, data);
-            // }
+            
         }
         else if(raiz->tipo == OP){
             if(raiz->filho_esq->tipo != OP && raiz->filho_dir->tipo != OP){
@@ -273,7 +322,7 @@ void detectar_literais(NO *no, LISTA *lista_data, bool *operacoes) {
 
 void copiar_e_substituir(const char* origem_nome, const char* destino_nome, int offset_mul, int offset_sub) {
     FILE *origem = fopen(origem_nome, "r");
-    FILE *destino = fopen(destino_nome, "a"); // abre no modo append para manter .DATA e .CODE intactos
+    FILE *destino = fopen(destino_nome, "a");
 
     if (!origem || !destino) {
         perror("Erro ao abrir os arquivos");
@@ -287,7 +336,7 @@ void copiar_e_substituir(const char* origem_nome, const char* destino_nome, int 
         } else if (strstr(linha, "SUB")) {
             fprintf(destino, "JMP %d\n", offset_sub);
         } else {
-            fputs(linha, destino); // mantém a linha original se não tiver MUL ou SUB
+            fputs(linha, destino); 
         }
     }
 
@@ -342,7 +391,7 @@ void criar_arquivo(LISTA *lista_data, NO *raiz){
         printf("OFFSET LINHAS: %d\n", offset_mul);
     }
 
-    fclose(assembly_temp); // fecha o temp depois de escrever tudo
+    fclose(assembly_temp);
     fclose(assembly);
     copiar_e_substituir("programa_temp.asm", "programa.asm", offset_mul, offset_sub);
 }

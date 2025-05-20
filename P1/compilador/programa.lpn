@@ -1,6 +1,6 @@
 PROGRAMA "u":
 INICIO
-A = 2 + 3
+A = 2 - 3
 B = 4
 RES = (A + B) * A * B
 FIM
