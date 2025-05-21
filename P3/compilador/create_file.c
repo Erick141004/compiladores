@@ -89,108 +89,43 @@ void gerar_mult_bf(FILE *f, int a, int b, int res, int tmp1, int tmp2, int *cel_
     
     // Volta para tmp1 para continuar o loop principal
     mover_para_celula(f, tmp1, tmp2);
-    fputs("]", f);            // fim do loop principal
+    fputs("]<", f);            // fim do loop principal
 
-    *cel_atual = tmp1;
+    *cel_atual = tmp1 - 1;
 }
 
-void gerar_div_bf(FILE *f, int a, int b, int res, int tmp1, int tmp2, int tmp3, int *cel_atual) {
-    // Zera res e temporários
-    mover_para_celula(f, res, *cel_atual);   fputs("[-]", f);
-    mover_para_celula(f, tmp1, res);         fputs("[-]", f);
-    mover_para_celula(f, tmp2, tmp1);        fputs("[-]", f);
-    mover_para_celula(f, tmp3, tmp2);        fputs("[-]", f);
+void gerar_div_bf(FILE *f, int a, int b, int res, int valor, int *cel_atual) {
+    // Zera as células de resultado e temporárias
+    mover_para_celula(f, res, *cel_atual);  fputs("[-]", f);
 
-    // Copia A para tmp1 (dividendo)
-    mover_para_celula(f, a, tmp3);
-    fputs("[->+<]", f);      // Copia A para tmp1, zerando A
+    // Loop de divisão: enquanto tmp1 >= tmp2
+    //mover_para_celula(f, tmp1, b);
+    mover_para_celula(f, a, res);
+    fputs("[", f); // Início do loop em tmp1
+    // Subtrai tmp2 de tmp1
+    gerar_valor_bf(f, 0, valor, cel_atual, true, '-');
 
-    // Inicia a divisão - algoritmo simples:
-    // Enquanto dividendo >= divisor:
-    //   Subtraia o divisor do dividendo
-    //   Incremente o resultado
+    // Incrementa o resultado
+    mover_para_celula(f, res, a);
+    fputc('+', f);
 
-    mover_para_celula(f, tmp1, a);
-    fputs("[", f);           // Início do loop principal - enquanto tmp1 (dividendo) > 0
+    // Volta para tmp1 para continuar o loop
+    mover_para_celula(f, a, res);
+    fputs("]", f); // Fim do loop
+    mover_para_celula(f, res, a);
 
-        // Copia tmp1 para tmp2 (cópia de trabalho do dividendo)
-        mover_para_celula(f, tmp2, tmp1);
-        fputs("[-]", f);     // Zera tmp2
-        mover_para_celula(f, tmp1, tmp2);
-        fputs("[->+<]", f);  // Copia tmp1 para tmp2
-        
-        // Copia B para tmp3 (cópia de trabalho do divisor)
-        mover_para_celula(f, tmp3, tmp1);
-        fputs("[-]", f);     // Zera tmp3
-        mover_para_celula(f, b, tmp3);
-        fputs("[->+<]", f);  // Copia B para tmp3
-        
-        // Tenta subtrair o divisor (tmp3) do tmp2
-        // E verifica se a subtração é possível
-        mover_para_celula(f, tmp2, b);
-        
-        // Loop de tentativa de subtração
-        fputs(">", f);       // Move para tmp2
-        
-        // Marca para flag usar mais tarde
-        fputs("+", f);       // Define uma flag (começamos assumindo sucesso)
-        
-        fputs("[", f);       // Enquanto tmp2 > 0
-            fputs("-", f);   // Decrementa tmp2
-            
-            // Decrementa tmp3 se ainda tiver valor
-            mover_para_celula(f, tmp3, tmp2);
-            fputs(">>[", f);  // Move para tmp3, verifica se > 0
-            fputs("-", f);    // Decrementa tmp3
-            
-            mover_para_celula(f, tmp2, tmp3);
-            fputs("<<]", f);  // Volta para tmp2
-            
-            // Verifica se tmp3 ficou negativo (ou seja, tmp2 < tmp3)
-            mover_para_celula(f, tmp3, tmp2);
-            fputs(">>", f);   // Move para tmp3
-            
-            fputs("+[-<->]", f); // Se tmp3 for zero, a flag permanece positiva
-                                  // Se tmp3 ainda tiver valor, zera a flag
-            
-            mover_para_celula(f, tmp2, tmp3);
-            fputs("<<", f);   // Volta para tmp2
-        fputs("]", f);       // Fim do loop de tentativa
-
-        // Se a subtração foi bem-sucedida
-        mover_para_celula(f, tmp2+1, tmp2); // Move para a flag
-        fputs("[", f);       // Se a flag for positiva (subtração possível)
-            fputs("-", f);   // Zera a flag
-
-            // Incrementa o resultado
-            mover_para_celula(f, res, tmp2+1);
-            fputs("+", f);   // Incrementa o resultado
-            
-            // Copia o valor residual de tmp2 de volta para tmp1
-            mover_para_celula(f, tmp1, res);
-            fputs("[-]", f);  // Zera tmp1
-            mover_para_celula(f, tmp2, tmp1);
-            fputs("[<+>-]", f); // Move o valor de tmp2 para tmp1
-            
-            // Vai para tmp1 para continuar as tentativas
-            mover_para_celula(f, tmp1, tmp2);
-            fputs("<", f);    // Move para tmp1
-        fputs("]", f);       // Fim do bloco condicional
-        
-        // Se não conseguiu subtrair (flag zerada), então o loop deve terminar
-        // retornando à célula tmp1 e verificando se ela é zero
-        mover_para_celula(f, tmp1, tmp2+1);
-        
-    fputs("]", f);           // Fim do loop principal
-
-    *cel_atual = tmp1;
+    *cel_atual = res; // Atualiza a célula atual
 }
 
-void gerar_valor_bf(FILE *f, int cel, int valor, int *cel_atual) {
-    mover_para_celula(f, cel, *cel_atual);
-    fprintf(f, "[-]"); // zera a célula
+void gerar_valor_bf(FILE *f, int cel, int valor, int *cel_atual, bool divisao, char sinal) {
+    
+    if (!divisao){
+        mover_para_celula(f, cel, *cel_atual);
+        fprintf(f, "[-]"); // zera a célula  
+    }     
+
     for (int i = 0; i < valor; i++) {
-        fputc('+', f);
+        fputc(sinal, f);
     }
     *cel_atual = cel; // atualiza a célula atual
 }
@@ -276,7 +211,7 @@ void gerar_codigo_bf(NO *raiz, FILE *file_bf, int *cel_atual, int *prox_cel_livr
     if (raiz->tipo == NUM) {
         int valor = (int)wcstol(raiz->valor, NULL, 10);
         raiz->celula = (*prox_cel_livre)++;
-        gerar_valor_bf(file_bf, raiz->celula, valor, cel_atual);
+        gerar_valor_bf(file_bf, raiz->celula, valor, cel_atual, false, '+');
     }
     else if (raiz->tipo == OP) {
         int a = raiz->filho_esq->celula;
@@ -300,22 +235,17 @@ void gerar_codigo_bf(NO *raiz, FILE *file_bf, int *cel_atual, int *prox_cel_livr
                 printf("Erro: divisão por zero!\n");
                 exit(EXIT_FAILURE);
             }
-            int tmp1 = (*prox_cel_livre)++;
-            int tmp2 = (*prox_cel_livre)++;
-            int tmp3 = (*prox_cel_livre)++;
-            gerar_div_bf(file_bf, a, b, raiz->celula, tmp1, tmp2, tmp3, cel_atual);
+     
+            gerar_div_bf(file_bf, a, b, raiz->celula, wcstol(raiz->filho_dir->valor, NULL, 10), cel_atual);
         }
     }
     else if (raiz->tipo == ATRIB) {
+        int cel_result = *cel_atual;
+
         gerar_texto_utf8_bf(file_bf, raiz->valor, cel_atual);
         gerar_char_utf8_bf(file_bf, L'=', cel_atual);
-
-        if (raiz->filho_dir) {
-            //gerar_imprimir_numero_bf(file_bf, raiz->filho_dir->celula, cel_atual, prox_cel_livre);
-
-            mover_para_celula(file_bf, raiz->filho_dir->celula, *cel_atual);
-            *cel_atual = raiz->filho_dir->celula;
-        }
+        mover_para_celula(file_bf, cel_result, *cel_atual);
+        fputc('.', file_bf);
     }
 }
 

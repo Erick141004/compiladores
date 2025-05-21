@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 
 #define TAPE_SIZE 30000
 
@@ -73,10 +75,33 @@ char* ler_stdin_completo() {
     return buffer;
 }
 
-int main(int argc, char **argv) {
-    char *codigo_bf = ler_stdin_completo();
-    executar_brainfuck(codigo_bf);
+char* ler_arquivo(const char *nome) {
+    FILE *f = fopen(nome, "r");
+    if (!f) {
+        fprintf(stderr, "Erro ao abrir '%s': %s\n", nome, strerror(errno));
+        exit(1);
+    }
+    fseek(f, 0, SEEK_END);
+    long t = ftell(f);
+    rewind(f);
+    char *buf = malloc(t+1);
+    if (!buf) { perror("malloc"); exit(1); }
+    fread(buf, 1, t, f);
+    buf[t] = '\0';
+    fclose(f);
+    return buf;
+}
 
+int main(int argc, char **argv) {
+    char *codigo_bf;
+
+    //if (argc > 1) {
+    codigo_bf = ler_arquivo("../compilador/main.bf");
+    // } else {
+    //     codigo_bf = ler_stdin_completo();
+    // }
+
+    executar_brainfuck(codigo_bf);
     free(codigo_bf);
     return 0;
 }
