@@ -14,7 +14,7 @@ int main(){
     setlocale(LC_ALL, "");
 
     if(fgets(buffer, sizeof(buffer), stdin) != NULL){
-        printf("Expressão lida: %s\n", buffer);
+   //     printf("Expressão lida: %s\n", buffer);
     } else {
         printf("Não foi possivel ler a expressão\n");
         return 1;
@@ -28,7 +28,7 @@ int main(){
         return 1;
     }
 
-    wprintf(L"Teste: %ls\n", wbuffer);
+    //wprintf(L"Teste: %ls\n", wbuffer);
 
     Token token;
     int pos_atual = 0;
@@ -37,8 +37,8 @@ int main(){
     token = proximo_token(wbuffer, &pos_atual);
     NO* no = parse_atribuicao(wbuffer, &pos_atual, &token, variaveis);
 
-    imprimir_arvore(no, 1);
-    imprimir_lista(variaveis);
+    //imprimir_arvore(no, 1);
+    //imprimir_lista(variaveis);
     criar_arquivo(no);
     limpar_arvore(no);
     deletar_lista(variaveis);

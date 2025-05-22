@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define TAPE_SIZE 30000
 
@@ -12,6 +13,7 @@ void executar_brainfuck(const char *codigo) {
     const char *pc = codigo;
     const char *loop_stack[512];
     int loop_top = -1;
+    bool eh_resultado = false;
 
     while (*pc) {
         switch (*pc) {
@@ -19,7 +21,16 @@ void executar_brainfuck(const char *codigo) {
             case '<': ptr--; break;
             case '+': tape[ptr]++; break;
             case '-': tape[ptr]--; break;
-            case '.': putchar(tape[ptr]); break;
+            case '.': 
+                if(!eh_resultado)
+                    putchar(tape[ptr]);
+                else
+                    printf(" %d", tape[ptr]);
+            
+                if(tape[ptr] == '='){
+                    eh_resultado = true;
+                }
+                break;
             case '[':
                 if (tape[ptr] == 0) {
                     int loop = 1;
@@ -44,7 +55,6 @@ void executar_brainfuck(const char *codigo) {
     }
 
     printf("\n");
-    printf("Resultado final: %d\n", tape[ptr]);
 }
 
 char* ler_stdin_completo() {
@@ -95,11 +105,11 @@ char* ler_arquivo(const char *nome) {
 int main(int argc, char **argv) {
     char *codigo_bf;
 
-    //if (argc > 1) {
-    codigo_bf = ler_arquivo("../compilador/main.bf");
-    // } else {
-    //     codigo_bf = ler_stdin_completo();
-    // }
+    if (argc > 1) {
+        codigo_bf = ler_arquivo("../compilador/main.bf");
+    } else {
+        codigo_bf = ler_stdin_completo();
+    }
 
     executar_brainfuck(codigo_bf);
     free(codigo_bf);

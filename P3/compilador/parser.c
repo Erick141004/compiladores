@@ -15,11 +15,11 @@ NO* parse_expressao2(wchar_t *content, int *pos_atual, Token *token){
     Token t = *token;
     
     if(token->tipo == TK_NUM){
-        printf("LDC %s\n", token->lexema);
+        //printf("LDC %s\n", token->lexema);
         consumir_token(TK_NUM, token, content, pos_atual);
         return inserir_no_variavel(t.lexema, NUM);
     } else if(token->tipo == TK_VAR){
-        printf("LDA %s\n", token->lexema);
+        //printf("LDA %s\n", token->lexema);
         consumir_token(TK_VAR, token, content, pos_atual);
         return inserir_no_variavel(t.lexema, VAR);
     } else if(token->tipo == TK_EPAREN){
@@ -28,7 +28,7 @@ NO* parse_expressao2(wchar_t *content, int *pos_atual, Token *token){
         consumir_token(TK_DPAREN, token, content, pos_atual);
         return no;
     } else{
-        error("erro ao fazer o parser - Token inesperado");
+        //error("erro ao fazer o parser - Token inesperado");
         return NULL;
     }
 }
@@ -81,7 +81,7 @@ NO* parse_atribuicao(wchar_t *content, int *pos_atual, Token *token, LISTA* vari
 
     consumir_token(TK_VAR, token, content, pos_atual);
     consumir_token(TK_ATRIBUICAO, token, content, pos_atual);
-    printf("; Processando atribuição para %s\n", atual.lexema);
+    //printf("; Processando atribuição para %s\n", atual.lexema);
     no_raiz->filho_esq = parse_expressao(content, pos_atual, token);
     no_raiz->filho_esq->no_pai = no_raiz;
 
@@ -95,7 +95,7 @@ NO* parse_atribuicao(wchar_t *content, int *pos_atual, Token *token, LISTA* vari
 
     //adicionar_no(variaveis, d);
 
-    printf("STA %s\n", atual.lexema);
+    //printf("STA %s\n", atual.lexema);
 
     return no_raiz;
 }
