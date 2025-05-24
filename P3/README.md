@@ -101,3 +101,8 @@ gcc -o executor/bfe executor/*.c
 Certifique-se de ter o `gcc` e o `make` instalados. 
 
 ---
+
+## 👨‍💼 Autoria
+
+Projeto acadêmico desenvolvido como parte do curso de Ciência da Computação.  
+Autor: Erick Costa Reimberg de Lima
