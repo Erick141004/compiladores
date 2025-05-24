@@ -44,11 +44,11 @@ CRÉDITO = 5 + 3 * 7
 
 Saída:
 ```
-CRÉDITO=26
+CRÉDITO= 26
 ```
 
 > A saída sempre será exibida no formato:  
-> **NOME_VARIÁVEL=RESULTADO**
+> **NOME_VARIÁVEL= RESULTADO**
 
 ---
 
