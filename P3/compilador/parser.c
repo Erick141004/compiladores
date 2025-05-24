@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "arvore.h"
-#include "lista.h"
 
 void error(const char *msg) {
     fprintf(stderr, "Erro: %s\n", msg);
@@ -74,7 +73,7 @@ NO* parse_expressao(wchar_t *content, int *pos_atual, Token *token){
     return esq;
 }
 
-NO* parse_atribuicao(wchar_t *content, int *pos_atual, Token *token, LISTA* variaveis){
+NO* parse_atribuicao(wchar_t *content, int *pos_atual, Token *token){
     Token atual = *token;
 
     NO* no_raiz = inserir_no_variavel(atual.lexema, ATRIB);

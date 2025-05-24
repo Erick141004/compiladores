@@ -8,37 +8,31 @@ void mover_para_celula(FILE *f, int alvo, int atual) {
 }
 
 void gerar_soma_bf(FILE *f, int a, int b, int res, int *cel_atual) {
-    // Zera resultado
     mover_para_celula(f, res, *cel_atual);
     fputs("[-]", f);
     *cel_atual = res;
 
-    // Copia A para resultado
     mover_para_celula(f, a, *cel_atual);
     fputs("[-", f);
     mover_para_celula(f, res, a); fputc('+', f);
-    mover_para_celula(f, a, res); fputs("]", f);  // <-- move de volta para A
+    mover_para_celula(f, a, res); fputs("]", f);
     *cel_atual = a;
 
-    // Copia B para resultado
     mover_para_celula(f, b, *cel_atual);
     fputs("[-", f);
     mover_para_celula(f, res, b); fputc('+', f);
-    mover_para_celula(f, b, res); fputs("]>", f);  // <-- move de volta para B
-    *cel_atual = b;
+    mover_para_celula(f, b, res); fputs("]>", f);
+    *cel_atual = b + 1;
 }
 
 void gerar_sub_bf(FILE *f, int a, int b, int res, int *cel_atual) {
-    // res = a - b
-    mover_para_celula(f, res, *cel_atual); fputs("[-]", f); // zera resultado
+    mover_para_celula(f, res, *cel_atual); fputs("[-]", f);
 
-    // copia A para res
     mover_para_celula(f, a, res);
     fputs("[-", f);
     mover_para_celula(f, res, a); fputc('+', f);
     mover_para_celula(f, a, res); fputs("]", f);
 
-    // subtrai B de res
     mover_para_celula(f, b, a);
     fputs("[-", f);
     mover_para_celula(f, res, b); fputc('-', f);
@@ -95,52 +89,52 @@ void gerar_mult_bf(FILE *f, int a, int b, int res, int tmp1, int tmp2, int *cel_
 }
 
 void gerar_div_bf(FILE *f, int a, int b, int res, int valor, int *cel_atual) {
-    // Zera as células de resultado e temporárias
     mover_para_celula(f, res, *cel_atual);  fputs("[-]", f);
 
-    // Loop de divisão: enquanto tmp1 >= tmp2
-    //mover_para_celula(f, tmp1, b);
     mover_para_celula(f, a, res);
-    fputs("[", f); // Início do loop em tmp1
-    // Subtrai tmp2 de tmp1
+    fputs("[", f);
+
     gerar_valor_bf(f, 0, valor, cel_atual, true, '-');
 
-    // Incrementa o resultado
     mover_para_celula(f, res, a);
     fputc('+', f);
 
-    // Volta para tmp1 para continuar o loop
     mover_para_celula(f, a, res);
-    fputs("]", f); // Fim do loop
+    fputs("]", f);
     mover_para_celula(f, res, a);
 
-    *cel_atual = res; // Atualiza a célula atual
+    *cel_atual = res;
 }
 
 void gerar_valor_bf(FILE *f, int cel, int valor, int *cel_atual, bool divisao, char sinal) {
     
     if (!divisao){
         mover_para_celula(f, cel, *cel_atual);
-        fprintf(f, "[-]"); // zera a célula  
+        fprintf(f, "[-]");  
     }     
 
     for (int i = 0; i < valor; i++) {
         fputc(sinal, f);
     }
-    *cel_atual = cel; // atualiza a célula atual
+    *cel_atual = cel;
 }
 
 
 void gerar_char_utf8_bf(FILE *file, wchar_t wc, int *cel_atual) {
     char utf8[5] = {0};
-    int len = wctomb(utf8, wc); // converte wchar_t para UTF-8
+    int len = wctomb(utf8, wc);
 
     for (int i = 0; i < len; i++) {
         int byte = (unsigned char)utf8[i];
+        
         mover_para_celula(file, (*cel_atual) + 1, *cel_atual);
-        fputs("[-]", file); // zera
-        for (int j = 0; j < byte; j++) fputc('+', file);
-        fputc('.', file); // imprime
+        fputs("[-]", file);
+        
+        for (int j = 0; j < byte; j++) {
+            fputc('+', file);
+        }
+        
+        fputc('.', file);
         *cel_atual = (*cel_atual) + 1;
     }
 }
@@ -149,57 +143,6 @@ void gerar_texto_utf8_bf(FILE *file, const wchar_t* texto, int *cel_atual) {
     for (int i = 0; texto[i] != L'\0'; i++) {
         gerar_char_utf8_bf(file, texto[i], cel_atual);
     }
-}
-
-void gerar_imprimir_numero_bf(FILE *f, int cel_num, int *cel_atual, int *prox_cel_livre) {
-    int tmp_num = (*prox_cel_livre)++;  // Cópia do número
-    int tmp_dezenas = (*prox_cel_livre)++;  // Dígito das dezenas
-    int tmp_unidades = (*prox_cel_livre)++;  // Dígito das unidades
-
-    // Zerar células temporárias
-    mover_para_celula(f, tmp_dezenas, *cel_atual);
-    fputs("[-]", f);
-    mover_para_celula(f, tmp_unidades, tmp_dezenas);
-    fputs("[-]", f);
-    mover_para_celula(f, tmp_num, tmp_unidades);
-    fputs("[-]", f);
-
-    // Copiar o número para tmp_num
-    mover_para_celula(f, cel_num, *cel_atual);
-    fputs("[->+", f);
-    mover_para_celula(f, tmp_num, cel_num);
-    fputs("<]", f);
-
-    // Calcular o dígito das dezenas
-    mover_para_celula(f, tmp_num, *cel_atual);
-    fputs("[", f);  // Enquanto tmp_num > 0
-    fputs("----------", f);  // Subtrair 10
-    mover_para_celula(f, tmp_dezenas, tmp_num);
-    fputc('+', f);  // Incrementar dezenas
-    mover_para_celula(f, tmp_num, tmp_dezenas);
-    fputs("]", f);
-
-    // O restante em tmp_num é o dígito das unidades
-    mover_para_celula(f, tmp_num, *cel_atual);
-    fputs("[->+", f);
-    mover_para_celula(f, tmp_unidades, tmp_num);
-    fputs("<]", f);
-
-    // Imprimir dígito das dezenas (se > 0)
-    mover_para_celula(f, tmp_dezenas, *cel_atual);
-    fputs("[", f);
-    for (int i = 0; i < 48; i++) fputc('+', f);  // Adicionar 48
-    fputc('.', f);  // Imprimir
-    fputs("[-]", f);  // Limpar
-    fputs("]", f);
-
-    // Imprimir dígito das unidades
-    mover_para_celula(f, tmp_unidades, *cel_atual);
-    for (int i = 0; i < 48; i++) fputc('+', f);  // Adicionar 48
-    fputc('.', f);  // Imprimir
-    fputs("[-]", f);  // Limpar
-
-    *cel_atual = tmp_unidades;
 }
 
 void gerar_codigo_bf(NO *raiz, FILE *file_bf, int *cel_atual, int *prox_cel_livre) {

@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "lista.h"
 #include "tokens.h"
 #include "arvore.h"
 #include "parser.h"
@@ -13,9 +12,7 @@ int main(){
     char buffer[100];
     setlocale(LC_ALL, "");
 
-    if(fgets(buffer, sizeof(buffer), stdin) != NULL){
-   //     printf("Expressão lida: %s\n", buffer);
-    } else {
+    if(fgets(buffer, sizeof(buffer), stdin) == NULL){
         printf("Não foi possivel ler a expressão\n");
         return 1;
     }
@@ -28,20 +25,14 @@ int main(){
         return 1;
     }
 
-    //wprintf(L"Teste: %ls\n", wbuffer);
-
     Token token;
     int pos_atual = 0;
-    LISTA *variaveis = criar_lista();
 
     token = proximo_token(wbuffer, &pos_atual);
-    NO* no = parse_atribuicao(wbuffer, &pos_atual, &token, variaveis);
+    NO* no = parse_atribuicao(wbuffer, &pos_atual, &token);
 
-    //imprimir_arvore(no, 1);
-    //imprimir_lista(variaveis);
     criar_arquivo(no);
     limpar_arvore(no);
-    deletar_lista(variaveis);
 
     return 0;
 }
