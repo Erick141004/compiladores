@@ -58,7 +58,7 @@ CRÉDITO=26
 - Suporte ao uso de **parênteses**.
 - Compilação da expressão para **Brainfuck**.
 - Execução do código Brainfuck.
-- **Suporte completo a UTF-8**: nomes de variáveis com acentuação, emojis e outros caracteres especiais são aceitos e corretamente tratados.
+- **Suporte a UTF-8**: nomes de variáveis com acentuação, emojis e outros caracteres especiais são aceitos e corretamente tratados.
 
 ---
 
@@ -98,20 +98,6 @@ gcc -o executor/bfe executor/*.c
 
 ### 📌 Requisitos
 
-Certifique-se de ter o `gcc` e o `make` instalados. Para instalar:
+Certifique-se de ter o `gcc` e o `make` instalados. 
 
-- **Debian/Ubuntu**:
-  ```bash
-  sudo apt update
-  sudo apt install build-essential
-  ```
-
-- **Arch Linux**:
-  ```bash
-  sudo pacman -S base-devel
-  ```
-
-- **macOS (com Homebrew)**:
-  ```bash
-  brew install gcc make
-  ```
+---
