@@ -4,7 +4,7 @@
 <inicio> ::= "INICIO" "\n"
 <fim> ::= "FIM"
 
-<bloco> ::= (<statement> "\n")*
+<bloco> ::= <espacos> (<statement> "\n")*
 
 <statement> ::= <declaracao_variavel>
               | <atribuicao>
@@ -38,21 +38,26 @@
 <tipo_retorno> ::= "void" | <tipo>
 <tipo> ::= "int" | "float" | "char"
 
-<expressao> ::= <expressao1> (<espacos> <adicao> <espacos> <expressao1>)*
-<expressao1> ::= <expressao2> (<espacos> <mult> <espacos> <expressao2>)*
-<expressao2> ::= <num>
+<expressao> ::= <expressao1> (<espacos> <logop> <espacos> <expressao1>)*
+<expressao1> ::= <expressao2> (<espacos> <relop> <espacos> <expressao2>)*
+<expressao2> ::= <expressao3> (<espacos> <adicao> <espacos> <expressao3>)*
+<expressao3> ::= <expressao4> (<espacos> <mult> <espacos> <expressao4>)*
+<expressao4> ::= "!" <expressao4>
+              | <num>
               | <var>
               | "(" <espacos> <expressao> <espacos> ")"
               | <chamada_funcao>
 
 <adicao> ::= "+" | "-"
 <mult> ::= "*" | "/"
+<relop> ::= ">" | "<" | ">=" | "<=" | "==" | "!="
+<logop> ::= "&&" | "||"
 
-<espacos> ::= (" " | "\t")*
+<espacos> ::= (" " | "\t" | "\n")*
 
 <var> ::= ([a-z] | [A-Z])+
 
 <num> ::= <positivo> | <negativo>
-<positivo> ::= ("0" | [1-9] [0-9]*) ("," [0-9]+)? <cientifico>?
+<positivo> ::= ("0" | [1-9] [0-9]*) ("." [0-9]+)? <cientifico>?
 <negativo> ::= "-" <positivo>
 <cientifico> ::= "e" "-"? [1-9] [0-9]*
